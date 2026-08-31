@@ -1,0 +1,54 @@
+name: Coin Alert
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: coin-alert
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      SYMBOLS: "BTCUSDT,ETHUSDT,BNBUSDT,SOLUSDT,XRPUSDT"
+      THRESHOLD_PERCENT: "2"
+      WINDOW: "1h"
+      COOLDOWN_MINUTES: "60"
+
+    steps:
+      - name: Lay code
+        uses: actions/checkout@v4
+
+      - name: Cai Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cai thu vien
+        run: pip install -r requirements.txt
+
+      - name: Kiem tra gia va gui canh bao
+        run: python crypto_alert_bot.py --once
+
+      - name: Luu trang thai canh bao
+        if: always()
+        run: |
+          if [ -n "$(git status --porcelain state.json)" ]; then
+            git config user.name "coin-alert-bot"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add state.json
+            git commit -m "chore: cap nhat trang thai canh bao"
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
+            git push
+          else
+            echo "Khong co thay doi trang thai."
+          fi
