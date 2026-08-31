@@ -1,0 +1,12 @@
+{
+  "telegram_bot_token": "DAN_TOKEN_CUA_BAN_VAO_DAY",
+  "telegram_chat_id": "DAN_CHAT_ID_CUA_BAN_VAO_DAY",
+  "symbols": ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT"],
+  "threshold_percent": 2.0,
+  "window": "1h",
+  "check_interval_seconds": 60,
+  "cooldown_minutes": 60,
+  "rearm_step_percent": 1.0,
+  "send_startup_message": true,
+  "enable_commands": true
+}
